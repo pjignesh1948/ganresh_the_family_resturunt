@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeamMember extends Model
 {
-    protected $fillable = ['name', 'role', 'bio', 'photo', 'phone', 'sort_order', 'is_active'];
+    protected $fillable = ['name', 'role', 'bio', 'photo', 'aadhar_card', 'phone', 'sort_order', 'is_active'];
 
     protected function casts(): array
     {

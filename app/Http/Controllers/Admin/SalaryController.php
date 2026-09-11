@@ -20,12 +20,12 @@ class SalaryController extends Controller
             ->with('staff')
             ->when($request->filled('staff_id'), fn ($q) => $q->where('staff_id', $request->integer('staff_id')))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
-            ->when($request->boolean('filter_month'), fn ($q) => $q->where(function ($q) use ($month, $year) {
+            ->where(function ($q) use ($month, $year) {
                 $q->where(fn ($q) => $q->where('month', $month)->where('year', $year))
                     ->orWhere(fn ($q) => $q->where('type', SalaryTransaction::TYPE_ADVANCE)
                         ->whereMonth('transaction_date', $month)
                         ->whereYear('transaction_date', $year));
-            }))
+            })
             ->latest('transaction_date')
             ->get();
 

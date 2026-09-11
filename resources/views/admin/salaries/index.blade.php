@@ -3,9 +3,31 @@
 @section('title', 'Salary Management')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <div><h1 class="h3 mb-0">Salary Management</h1><p class="text-muted small mb-0">Track salary, advances & remaining balance per staff</p></div>
+@php
+    $lastMonthDate = now()->subMonth();
+    $lastMonth = (int) $lastMonthDate->format('n');
+    $lastMonthYear = (int) $lastMonthDate->format('Y');
+@endphp
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Salary Management</h1>
+        <p class="text-muted small mb-0">Track salary, advances & remaining balance per staff</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ route('admin.salaries.index', ['month' => now()->month, 'year' => now()->year, 'filter_month' => 1, 'staff_id' => request('staff_id'), 'type' => request('type')]) }}" class="btn btn-sm btn-outline-accent">This Month</a>
+        <a href="{{ route('admin.salaries.index', ['month' => $lastMonth, 'year' => $lastMonthYear, 'filter_month' => 1, 'staff_id' => request('staff_id'), 'type' => request('type')]) }}" class="btn btn-sm btn-accent">Last Month ({{ date('F Y', mktime(0,0,0,$lastMonth,1,$lastMonthYear)) }})</a>
+    </div>
 </div>
+
+<div class="card shadow-sm mb-4"><div class="card-body">
+<form method="GET" class="row g-2 align-items-end">
+    <div class="col-md-2"><label class="form-label">Month</label><select name="month" class="form-select">@for($m=1;$m<=12;$m++)<option value="{{ $m }}" {{ $month==$m?'selected':'' }}>{{ date('F', mktime(0,0,0,$m,1)) }}</option>@endfor</select></div>
+    <div class="col-md-2"><label class="form-label">Year</label><input type="number" name="year" class="form-control" value="{{ $year }}"></div>
+    <div class="col-md-3"><label class="form-label">Staff</label><select name="staff_id" class="form-select"><option value="">All Staff</option>@foreach($staffMembers as $s)<option value="{{ $s->id }}" {{ request('staff_id')==$s->id?'selected':'' }}>{{ $s->name }}</option>@endforeach</select></div>
+    <div class="col-md-2"><label class="form-label">Type</label><select name="type" class="form-select"><option value="">All</option>@foreach($types as $type)<option value="{{ $type }}" {{ request('type')===$type?'selected':'' }}>{{ ucfirst($type) }}</option>@endforeach</select></div>
+    <div class="col-md-3"><input type="hidden" name="filter_month" value="1"><button type="submit" class="btn btn-accent w-100"><i class="bi bi-funnel"></i> Apply Filters</button></div>
+</form></div></div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4"><div class="card card-stat"><div class="card-body"><div class="text-muted small">Total Monthly Salary</div><div class="fs-4 fw-bold">₹{{ number_format($totals['monthly'], 0) }}</div></div></div></div>
@@ -39,23 +61,14 @@
     </div>
 </form></div></div>
 
-<div class="card shadow-sm mb-3"><div class="card-body">
-<form method="GET" class="row g-2 align-items-end">
-    <div class="col-md-2"><label class="form-label">Month</label><select name="month" class="form-select">@for($m=1;$m<=12;$m++)<option value="{{ $m }}" {{ $month==$m?'selected':'' }}>{{ date('F', mktime(0,0,0,$m,1)) }}</option>@endfor</select></div>
-    <div class="col-md-2"><label class="form-label">Year</label><input type="number" name="year" class="form-control" value="{{ $year }}"></div>
-    <div class="col-md-3"><label class="form-label">Staff</label><select name="staff_id" class="form-select"><option value="">All Staff</option>@foreach($staffMembers as $s)<option value="{{ $s->id }}" {{ request('staff_id')==$s->id?'selected':'' }}>{{ $s->name }}</option>@endforeach</select></div>
-    <div class="col-md-2"><label class="form-label">Type</label><select name="type" class="form-select"><option value="">All</option>@foreach($types as $type)<option value="{{ $type }}" {{ request('type')===$type?'selected':'' }}>{{ ucfirst($type) }}</option>@endforeach</select></div>
-    <div class="col-md-3"><input type="hidden" name="filter_month" value="1"><button type="submit" class="btn btn-accent w-100"><i class="bi bi-funnel"></i> Apply Filters</button></div>
-</form></div></div>
-
-<div class="card shadow-sm"><div class="card-header fw-semibold">Transaction History</div>
-<div class="table-responsive"><table class="table table-hover mb-0 admin-datatable"><thead><tr><th>Date</th><th>Staff</th><th>Type</th><th>Amount</th><th>Period</th><th>Note</th></tr></thead>
-<tbody>@forelse($transactions as $tx)<tr>
+<div class="card shadow-sm"><div class="card-header fw-semibold">Transaction History — {{ date('F', mktime(0,0,0,$month,1)) }} {{ $year }}</div>
+<div class="table-responsive"><table class="table table-hover mb-0 admin-datatable" data-empty="No transactions for selected filters."><thead><tr><th>Date</th><th>Staff</th><th>Type</th><th>Amount</th><th>Period</th><th>Note</th></tr></thead>
+<tbody>@foreach($transactions as $tx)<tr>
     <td>{{ $tx->transaction_date->format('d M Y') }}</td>
-    <td>{{ $tx->staff?->name }}</td>
+    <td>{{ $tx->staff?->name ?? '—' }}</td>
     <td><span class="badge bg-{{ $tx->type==='salary'?'success':'warning text-dark' }}">{{ ucfirst($tx->type) }}</span></td>
     <td class="fw-semibold">₹{{ number_format($tx->amount, 2) }}</td>
     <td>@if($tx->month){{ date('M', mktime(0,0,0,$tx->month,1)) }} {{ $tx->year }}@else—@endif</td>
     <td>{{ $tx->note ?? '—' }}</td>
-</tr>@empty<tr><td colspan="6" class="text-center text-muted py-4">No transactions for selected filters.</td></tr>@endforelse</tbody></table></div></div>
+</tr>@endforeach</tbody></table></div></div>
 @endsection

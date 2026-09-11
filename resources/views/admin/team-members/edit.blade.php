@@ -12,12 +12,19 @@
         <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control" value="{{ old('phone', $member->phone) }}"></div>
         <div class="col-md-6"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', $member->sort_order) }}" min="0"></div>
         <div class="col-12"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="4">{{ old('bio', $member->bio) }}</textarea></div>
-        <div class="col-12">
+        <div class="col-md-6">
             <label class="form-label">Photo</label>
             @if($member->photo)
-                <div class="mb-2"><img src="{{ asset('storage/'.$member->photo) }}" height="80" class="rounded"></div>
+                <div class="mb-2"><img src="@media($member->photo)" height="80" class="rounded object-fit-cover" alt="{{ $member->name }}" onerror="this.src='{{ asset('images/logo-icon.png') }}'"></div>
             @endif
             <input type="file" name="photo" class="form-control" accept="image/*">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Aadhar Card Image</label>
+            @if($member->aadhar_card)
+                <div class="mb-2"><img src="@media($member->aadhar_card)" height="80" class="rounded object-fit-cover" alt="Aadhar card" onerror="this.src='{{ asset('images/logo-icon.png') }}'"></div>
+            @endif
+            <input type="file" name="aadhar_card" class="form-control" accept="image/*">
         </div>
         <div class="col-12 form-check"><input type="checkbox" name="is_active" value="1" class="form-check-input" id="is_active" {{ old('is_active', $member->is_active) ? 'checked' : '' }}><label class="form-check-label" for="is_active">Active</label></div>
         <div class="col-12"><button type="submit" class="btn btn-accent">Update</button> <a href="{{ route('admin.team-members.index') }}" class="btn btn-outline-secondary">Cancel</a></div>

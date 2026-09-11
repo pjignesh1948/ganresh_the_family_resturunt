@@ -31,13 +31,24 @@
             width: var(--sidebar-w);
             background: var(--bg-sidebar);
             color: var(--text-primary);
-            min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1030;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             border-right: 1px solid var(--border-color);
+        }
+
+        .admin-sidebar .sidebar-nav-scroll {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
         .admin-sidebar .brand {
@@ -409,6 +420,7 @@
             <img src="{{ asset('images/logo-icon.png') }}" alt="Ganesh Restaurant" class="mb-2">
             <div class="fw-bold small text-white brand-text">Ganesh Admin</div>
         </div>
+        <div class="sidebar-nav-scroll">
         <nav class="nav flex-column pb-4">
             <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                 <i class="bi bi-speedometer2 me-2"></i> Dashboard
@@ -501,6 +513,7 @@
                 </button>
             </form>
         </nav>
+        </div>
     </aside>
 
     <div class="admin-content">
@@ -575,14 +588,29 @@
         });
         $(function(){
             $('.admin-datatable').each(function(){
-                if (!$.fn.DataTable.isDataTable(this)) {
-                    $(this).DataTable({
-                        pageLength: 25,
-                        order: [],
-                        responsive: true,
-                        language: { search: 'Search:', searchPlaceholder: 'Type to filter...', lengthMenu: 'Show _MENU_ rows' }
-                    });
+                var $table = $(this);
+                $table.find('tbody tr').each(function(){
+                    if ($(this).find('td[colspan]').length) {
+                        $(this).remove();
+                    }
+                });
+                if ($.fn.DataTable.isDataTable(this)) {
+                    return;
                 }
+                var emptyMsg = $table.data('empty') || 'No records found.';
+                $table.DataTable({
+                    pageLength: 25,
+                    order: [],
+                    responsive: false,
+                    autoWidth: false,
+                    language: {
+                        search: 'Search:',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: 'Show _MENU_ rows',
+                        emptyTable: emptyMsg,
+                        zeroRecords: emptyMsg
+                    }
+                });
             });
         });
     })();
@@ -659,7 +687,7 @@
             alertBar.classList.add('show');
             showToast(order);
             playBeep();
-            speak('Attention! One new order is coming. Order number '+order.order_no+' from '+order.customer_name+'. Total amount '+order.total+' rupees. Please check the orders panel.');
+            speak(order.customer_name+', you have new order from Ganesh website.');
             if(Notification.permission === 'granted'){
                 new Notification('Ganesh Restaurant — New Order', {
                     body: order.order_no+' · '+order.customer_name+' · ₹'+order.total,

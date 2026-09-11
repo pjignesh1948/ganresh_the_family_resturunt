@@ -10,12 +10,14 @@
 <div class="card shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover mb-0 admin-datatable">
-            <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Monthly Salary</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Photo</th><th>Name</th><th>Role</th><th>City</th><th>Phone</th><th>Monthly Salary</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
                 @foreach($staffMembers as $staff)
                     <tr>
+                        <td><img src="@media($staff->photo)" height="36" width="36" class="rounded-circle object-fit-cover" alt="" onerror="this.src='{{ asset('images/logo-icon.png') }}'"></td>
                         <td>{{ $staff->name }}</td>
                         <td>{{ $staff->role ?? '—' }}</td>
+                        <td>{{ $staff->city ?? '—' }}{{ $staff->state ? ', '.$staff->state : '' }}</td>
                         <td>{{ $staff->phone ?? '—' }}</td>
                         <td>₹{{ number_format($staff->monthly_salary, 2) }}</td>
                         <td><span class="badge bg-{{ $staff->is_active ? 'success' : 'secondary' }}">{{ $staff->is_active ? 'Active' : 'Inactive' }}</span></td>

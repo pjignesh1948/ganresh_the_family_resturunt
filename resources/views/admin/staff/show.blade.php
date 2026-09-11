@@ -9,9 +9,15 @@
 </div>
 <div class="row g-4">
     <div class="col-md-4"><div class="card shadow-sm"><div class="card-body">
+        <div class="mb-3"><img src="@media($staff->photo)" height="90" class="rounded object-fit-cover" alt="{{ $staff->name }}" onerror="this.src='{{ asset('images/logo-icon.png') }}'"></div>
         <p><strong>Role:</strong> {{ $staff->role ?? '—' }}</p>
+        <p><strong>Location:</strong> {{ $staff->city ?? '—' }}{{ $staff->state ? ', '.$staff->state : '' }}</p>
         <p><strong>Phone:</strong> {{ $staff->phone ?? '—' }}</p>
         <p><strong>Email:</strong> {{ $staff->email ?? '—' }}</p>
+        <p><strong>Aadhar No:</strong> {{ $staff->aadhar_number ?? '—' }}</p>
+        @if($staff->aadhar_card)
+            <p><strong>Aadhar Card:</strong><br><img src="@media($staff->aadhar_card)" height="80" class="rounded mt-1" alt="Aadhar"></p>
+        @endif
         <p><strong>Joining:</strong> {{ $staff->joining_date?->format('M d, Y') ?? '—' }}</p>
         <p><strong>Monthly Salary:</strong> ₹{{ number_format($staff->monthly_salary, 2) }}</p>
         <p><strong>Status:</strong> {{ $staff->is_active ? 'Active' : 'Inactive' }}</p>

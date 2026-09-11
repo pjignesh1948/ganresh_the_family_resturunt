@@ -26,10 +26,14 @@ class AppServiceProvider extends ServiceProvider
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             return $path;
         }
-        if (str_starts_with($path, 'images/')) {
+        if (str_starts_with($path, 'images/') || str_starts_with($path, 'uploads/')) {
             return asset($path);
         }
 
-        return asset('storage/' . $path);
+        if (is_file(public_path('uploads/'.$path))) {
+            return asset('uploads/'.$path);
+        }
+
+        return asset('storage/'.$path);
     }
 }

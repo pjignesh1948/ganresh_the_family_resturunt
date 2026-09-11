@@ -32,12 +32,16 @@ class TeamMemberController extends Controller
             'role' => 'nullable|string|max:120',
             'bio' => 'nullable|string',
             'photo' => 'nullable|image|max:2048',
+            'aadhar_card' => 'nullable|image|max:4096',
             'phone' => 'nullable|string|max:20',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
         ]);
         if ($request->hasFile('photo')) {
             $data['photo'] = $this->storePublicImage($request->file('photo'), 'team');
+        }
+        if ($request->hasFile('aadhar_card')) {
+            $data['aadhar_card'] = $this->storePublicImage($request->file('aadhar_card'), 'team/aadhar');
         }
         $data['is_active'] = $request->boolean('is_active', true);
         TeamMember::create($data);
@@ -57,6 +61,7 @@ class TeamMemberController extends Controller
             'role' => 'nullable|string|max:120',
             'bio' => 'nullable|string',
             'photo' => 'nullable|image|max:2048',
+            'aadhar_card' => 'nullable|image|max:4096',
             'phone' => 'nullable|string|max:20',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
@@ -64,6 +69,10 @@ class TeamMemberController extends Controller
         if ($request->hasFile('photo')) {
             $this->deletePublicImage($teamMember->photo);
             $data['photo'] = $this->storePublicImage($request->file('photo'), 'team');
+        }
+        if ($request->hasFile('aadhar_card')) {
+            $this->deletePublicImage($teamMember->aadhar_card);
+            $data['aadhar_card'] = $this->storePublicImage($request->file('aadhar_card'), 'team/aadhar');
         }
         $data['is_active'] = $request->boolean('is_active');
         $teamMember->update($data);
@@ -74,6 +83,7 @@ class TeamMemberController extends Controller
     public function destroy(TeamMember $teamMember): RedirectResponse
     {
         $this->deletePublicImage($teamMember->photo);
+        $this->deletePublicImage($teamMember->aadhar_card);
         $teamMember->delete();
 
         return redirect()->route('admin.team-members.index')->with('success', 'Team member removed.');

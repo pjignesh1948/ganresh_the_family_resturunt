@@ -9,7 +9,7 @@
 </div>
 <div class="card">
     <div class="table-responsive">
-        <table class="table table-hover mb-0 admin-datatable">
+        <table class="table table-hover mb-0 admin-datatable" data-empty="No team members found.">
             <thead>
                 <tr>
                     <th>Photo</th>
@@ -22,14 +22,10 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($members as $member)
+                @foreach($members as $member)
                     <tr>
                         <td>
-                            @if($member->photo)
-                                <img src="{{ asset('storage/'.$member->photo) }}" alt="{{ $member->name }}" height="40" width="40" class="rounded-circle object-fit-cover">
-                            @else
-                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-25" style="width:40px;height:40px;"><i class="bi bi-person text-muted"></i></span>
-                            @endif
+                            <img src="@media($member->photo)" alt="{{ $member->name }}" height="40" width="40" class="rounded-circle object-fit-cover" onerror="this.src='{{ asset('images/logo-icon.png') }}'">
                         </td>
                         <td class="fw-semibold">{{ $member->name }}</td>
                         <td>{{ $member->role ?? '—' }}</td>
@@ -44,9 +40,7 @@
                             </form>
                         </td>
                     </tr>
-                @empty
-                    <tr><td colspan="7" class="text-center text-muted py-4">No team members found.</td></tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

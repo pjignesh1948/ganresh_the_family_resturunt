@@ -16,7 +16,7 @@
         <div class="col-md-6"><label class="form-label">Unit</label><input type="text" name="unit" class="form-control" value="{{ old('unit', $vegetable->unit) }}"></div>
         <div class="col-md-6"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', $vegetable->sort_order) }}" min="0"></div>
         <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3">{{ old('description', $vegetable->description) }}</textarea></div>
-        <div class="col-12"><label class="form-label">Image</label>@if($vegetable->image)<div class="mb-2"><img src="{{ asset('storage/'.$vegetable->image) }}" height="60" class="rounded"></div>@endif<input type="file" name="image" class="form-control" accept="image/*"></div>
+        <div class="col-12"><label class="form-label">Image</label>@if($vegetable->image)<div class="mb-2"><img src="@media($vegetable->image)" height="80" class="rounded object-fit-cover" alt="{{ $vegetable->name }}" onerror="this.src='{{ asset('images/logo-icon.png') }}'"></div>@endif<input type="file" name="image" class="form-control" accept="image/*"></div>
         <div class="col-12 form-check"><input type="checkbox" name="is_active" value="1" class="form-check-input" id="is_active" {{ old('is_active', $vegetable->is_active) ? 'checked' : '' }}><label class="form-check-label" for="is_active">Active</label></div>
         <div class="col-12"><button type="submit" class="btn btn-accent">Update</button> <a href="{{ route('admin.vegetables.index') }}" class="btn btn-outline-secondary">Cancel</a></div>
     </div>
